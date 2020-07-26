@@ -24,6 +24,8 @@
 		<module>eureka-consumer-feign</module>
 		<module>hystrix-dashboard</module>
 		<module>netflix-turbine</module>
+		<module>spring-cloud-config-server</module>
+		<module>spring-cloud-config-client</module>
 	</modules>
 	<packaging>pom</packaging>
 

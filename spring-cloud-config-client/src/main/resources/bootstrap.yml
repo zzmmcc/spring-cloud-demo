@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: config-client-git
+      uri: http://localhost:1200
+      profile: dev
+      label: master
