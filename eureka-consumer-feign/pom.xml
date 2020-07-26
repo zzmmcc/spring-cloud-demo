@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.zhangmc</groupId>
-    <artifactId>eureka-producer-feign</artifactId>
+    <artifactId>eureka-consumer-feign</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>eureka-producer-feign</name>
+    <name>eureka-consumer-feign</name>
     <description>Demo project for Spring Cloud</description>
 
     <properties>
