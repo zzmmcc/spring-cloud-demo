@@ -26,6 +26,7 @@
 		<module>netflix-turbine</module>
 		<module>spring-cloud-config-server</module>
 		<module>spring-cloud-config-client</module>
+		<module>netflix-zuul-gateway</module>
 	</modules>
 	<packaging>pom</packaging>
 

@@ -13,10 +13,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableCircuitBreaker
 @EnableHystrix
-public class EurekaConsumerFeignApplication {
+public class ConsumerFeignApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(EurekaConsumerFeignApplication.class, args);
+        SpringApplication.run(ConsumerFeignApplication.class, args);
     }
 
 }

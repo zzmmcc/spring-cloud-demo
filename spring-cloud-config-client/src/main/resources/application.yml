@@ -1,8 +1,13 @@
 spring:
   application:
     name: config-client
+  cloud:
+    bus:
+      trace:
+        enabled: true
+      enabled: true
 server:
-  port: 13000
+  port: 1300
 management:
   endpoints:
     web:

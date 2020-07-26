@@ -1,0 +1,9 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7000/eureka/
+spring:
+  application:
+    name: zuul-api-gateway
+server:
+  port: 1400
