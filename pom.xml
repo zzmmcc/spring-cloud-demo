@@ -27,6 +27,8 @@
 		<module>spring-cloud-config-server</module>
 		<module>spring-cloud-config-client</module>
 		<module>netflix-zuul-gateway</module>
+		<module>cloud-trace-a</module>
+        <module>cloud-trace-b</module>
 	</modules>
 	<packaging>pom</packaging>
 
