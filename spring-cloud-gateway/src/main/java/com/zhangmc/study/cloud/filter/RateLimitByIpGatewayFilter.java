@@ -69,6 +69,6 @@ public class RateLimitByIpGatewayFilter implements GatewayFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -100;
+        return -1000;
     }
 }

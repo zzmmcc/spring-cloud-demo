@@ -2,12 +2,15 @@ package com.zhangmc.study.cloud;
 
 import com.zhangmc.study.cloud.filter.ElapsedFilter;
 import com.zhangmc.study.cloud.filter.ElapsedGatewayFilterFactory;
+import com.zhangmc.study.cloud.filter.RateLimitByIpGatewayFilter;
 import com.zhangmc.study.cloud.filter.TokenFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+
+import java.time.Duration;
 
 /**
  * @author 张铭传
@@ -29,18 +32,31 @@ public class SpringCloudGatewayApplication {
         return new ElapsedGatewayFilterFactory();
     }
 
-//    @Bean
-//    public RouteLocator customerRouteLocator(RouteLocatorBuilder builder){
-//        return builder.routes()
-//                .route(r -> r.path("/consumer/**")
-//                        .filters(f -> f.stripPrefix(1)
-//                                .addRequestHeader("X-Response-Default-Foo", "Default-Bar")
-//                                .filter(new ElapsedFilter())
-//                        )
-//                        .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
-//                        .order(0)
-//                        .id("stream_consumer_service")
-//                ).build();
-//    }
+    @Bean
+    public RouteLocator customerRouteLocator(RouteLocatorBuilder builder){
+        return builder.routes()
+                .route(r -> r.path("/consumer/**")
+                        .filters(f -> f.stripPrefix(1)
+                                .addRequestHeader("X-Response-Default-Foo", "Default-Bar")
+                                .filter(new ElapsedFilter())
+                        )
+                        .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
+                        .order(0)
+                        .id("stream_consumer_service")
+                ).build();
+    }
+
+    @Bean
+    public RouteLocator limitRouteLocator(RouteLocatorBuilder builder){
+        return builder.routes()
+                .route(r -> r.path("/throttle/consumer/**")
+                        .filters(f -> f.stripPrefix(2)
+                                .filter(new RateLimitByIpGatewayFilter(10, 1, Duration.ofSeconds(1)))
+                        )
+                        .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
+                        .order(0)
+                        .id("throttle_consumer_service")
+                ).build();
+    }
 
 }
