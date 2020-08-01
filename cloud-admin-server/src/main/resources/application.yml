@@ -1,0 +1,27 @@
+spring:
+#  mail:
+#    host: smtp.qq.com
+#    username: 1129414986@qq.com
+#    password: 123456789000zmc
+#    port: 465
+  application:
+    name: admin-server
+  security:
+    user:
+      name: 'admin'
+      password: 'admin'
+  boot:
+    admin:
+      notify:
+        mail:
+          to: 1129414986@qq.com
+      client:
+        username: 'admin'
+        password: 'admin'
+server:
+  port: 1500
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA-_SERVER_URL:http://localhost:7000}/eureka/
+

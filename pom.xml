@@ -30,6 +30,8 @@
 		<module>cloud-trace-a</module>
         <module>cloud-trace-b</module>
 		<module>spring-cloud-gateway</module>
+		<module>cloud-admin-server</module>
+		<module>cloud-admin-client</module>
 	</modules>
 	<packaging>pom</packaging>
 

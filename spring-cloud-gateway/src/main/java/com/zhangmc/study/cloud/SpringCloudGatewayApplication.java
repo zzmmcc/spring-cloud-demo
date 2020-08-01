@@ -1,9 +1,7 @@
 package com.zhangmc.study.cloud;
 
-import com.zhangmc.study.cloud.filter.ElapsedFilter;
-import com.zhangmc.study.cloud.filter.ElapsedGatewayFilterFactory;
-import com.zhangmc.study.cloud.filter.RateLimitByIpGatewayFilter;
-import com.zhangmc.study.cloud.filter.TokenFilter;
+import com.zhangmc.study.cloud.filter.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -17,9 +15,22 @@ import java.time.Duration;
  */
 @SpringBootApplication
 public class SpringCloudGatewayApplication {
+    private final  RateLimitByCpuGatewayFilter rateLimitByCpuGatewayFilter;
+
+    @Autowired
+    public SpringCloudGatewayApplication(RateLimitByCpuGatewayFilter rateLimitByCpuGatewayFilter) {
+        this.rateLimitByCpuGatewayFilter = rateLimitByCpuGatewayFilter;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SpringCloudGatewayApplication.class, args);
+    }
+
+
+
+    @Bean(name = RemoteAddKeyResolver.BEAN_NAME)
+    public RemoteAddKeyResolver remoteAddKeyResolver(){
+        return new RemoteAddKeyResolver();
     }
 
     @Bean
@@ -32,6 +43,24 @@ public class SpringCloudGatewayApplication {
         return new ElapsedGatewayFilterFactory();
     }
 
+    @Bean
+    public RouteLocator limitRouteLocator(RouteLocatorBuilder builder){
+        return builder.routes()
+                .route(r -> r.path("/cpuLimiter/consumer/**")
+                        .filters(f -> f.stripPrefix(2)
+                                .filter(rateLimitByCpuGatewayFilter)
+                        )
+                        .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
+                        .order(0)
+                        .id("cpu_limiter_consumer_service")
+                ).build();
+    }
+
+    /**
+     * //网关
+     * @param builder
+     * @return
+     */
     @Bean
     public RouteLocator customerRouteLocator(RouteLocatorBuilder builder){
         return builder.routes()
@@ -46,17 +75,20 @@ public class SpringCloudGatewayApplication {
                 ).build();
     }
 
+    /**
+     * ip限流
+     */
     @Bean
-    public RouteLocator limitRouteLocator(RouteLocatorBuilder builder){
-        return builder.routes()
-                .route(r -> r.path("/throttle/consumer/**")
-                        .filters(f -> f.stripPrefix(2)
-                                .filter(new RateLimitByIpGatewayFilter(10, 1, Duration.ofSeconds(1)))
-                        )
-                        .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
-                        .order(0)
-                        .id("throttle_consumer_service")
-                ).build();
-    }
+    public RouteLocator IplimitRouteLocator(RouteLocatorBuilder builder){
+    return builder.routes()
+            .route(r -> r.path("/throttle/consumer/**")
+                    .filters(f -> f.stripPrefix(2)
+                            .filter(new RateLimitByIpGatewayFilter(10, 1, Duration.ofSeconds(1)))
+                    )
+                    .uri("lb://EUREKA-CONSUMER-FEIGN-HYSTRIX")
+                    .order(0)
+                    .id("throttle_consumer_service")
+            ).build();
+}
 
 }

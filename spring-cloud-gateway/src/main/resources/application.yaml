@@ -7,20 +7,33 @@ spring:
         locator:
           enabled: true
           #是否与服务注册于发现组件进行结合，通过 serviceId 转发到具体的服务实例。默认为 false，设为 true 便开启通过服务中心的自动根据 serviceId 创建路由的功能。
-#      routes:
-#        - id: service_consumer
-#          uri: lb://eureka-consumer-feign-hystrix
-#          order: 0
-#          predicates:
-#            - Path=/consumer/**
-#          filters:
-#            - StripPrefix=1
-#            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
-            # 拦截到 localhost:14001/consumer/**的请求  截取predicates 的前缀为 filters 的StripPrefix 之后的path  转发到 对应的端口 eureka-consumer-feign-hystrix  加上截取后的path
-            # localhost:14001/consumer/hello/zhangMC  ==>      path = /hello/zhangMC      从注册中心获取到eureka-consumer-feign-hystrix的ip 端口
-            # http://localhost:9001/eureka-consumer-feign-hystrix/ 'path'
+      routes:
+        - id: service_consumer
+          uri: lb://eureka-consumer-feign-hystrix
+          order: 0
+          predicates:
+            - Path=/consumer/**
+          filters:
+            - StripPrefix=1
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/fallback
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddKeyResolver}' #用于限流的键的解析器的 Bean 对象名字
+                redis-rate-limiter.replenishRate: 1 #令牌桶每秒填充平均速率
+                redis-rete-limiter.burstCapacity: 5  #令牌桶容量
+            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+#            # 拦截到 localhost:14001/consumer/**的请求  截取predicates 的前缀为 filters 的StripPrefix 之后的path  转发到 对应的端口 eureka-consumer-feign-hystrix  加上截取后的path
+#            # localhost:14001/consumer/hello/zhangMC  ==>      path = /hello/zhangMC      从注册中心获取到eureka-consumer-feign-hystrix的ip 端口
+#            # http://localhost:9001/eureka-consumer-feign-hystrix/ 'path'
       default-filters:
         - Elapsed=true
+  redis:
+    host: 120.79.193.209
+    port: 16379
+    database: 0
 eureka:
   client:
     service-url:
@@ -31,3 +44,8 @@ logging:
 server:
   port: 14001
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
